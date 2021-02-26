@@ -39,7 +39,7 @@ echo iface eth0 inet dhcp | sudo tee -a /etc/network/interfaces
 sudo apt -y --purge autoremove
 
 # Upgrade all packages
-sudo apt upgrade
+sudo apt upgrade -y
 
 # Remove swapfile
 sudo swapoff -a
