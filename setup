@@ -1,0 +1,36 @@
+#!/bin/bash
+
+set -eu -o pipefail
+
+# Purge all non-required packages
+sudo apt purge -y $(dpkg-query -Wf '${Package;-40}${Priority}\n' | awk '$2 ~ /important|standard|optional|extra/ && $1 !~ /linux|apt|lib|gpgv|ubuntu-keyring|init|systemd|adduser/ { print $1 }')
+
+# Remove dependencies
+sudo apt -y --purge autoremove
+
+# Remove swapfile
+sudo swapoff -a
+sudo rm -f /swapfile
+sudo sed -i 's/^\/swapfile/\#\/swapfile/' /etc/fstab
+
+# Remove temp files
+sudo apt clean
+rm -rf /home/user/{.[!.],}*
+sudo rm -rf /root/{.[!.],}*
+sudo rm -rf /tmp/{.[!.],}*
+sudo rm -rf /var/log/*
+sudo rm -rf /var/backups/*
+sudo rm -rf /var/cache/*
+sudo rm -rf /var/lib/apt/lists
+sudo rm -rf /var/lib/dpkg/*-old
+
+sudo sync -f
+sudo fstrim -A
+
+# Zero free space
+echo Scrubbing free space...
+sudo dd bs=4M if=/dev/zero of=/var/tmp/empty || sudo rm -f /var/tmp/empty
+sudo sync -f
+
+# Shut down
+sudo shutdown now
