@@ -2,11 +2,30 @@
 
 set -eu -o pipefail
 
+# Update package lists
+sudo apt update
+
 # Purge all non-required packages
 sudo apt purge -y $(dpkg-query -Wf '${Package;-40}${Priority}\n' | awk '$2 ~ /important|standard|optional|extra/ && $1 !~ /linux|apt|lib|gpgv|ubuntu-keyring|init|systemd|adduser/ { print $1 }')
 
+# Add needed packages
+sudo apt install -y git ifupdown
+
+# Show boot messages instead of splash screen
+echo 'GRUB_CMDLINE_LINUX_DEFAULT=""' | sudo tee -a /etc/default/grub
+
+# Add basic networking
+# Use old standard names for interfaces (e.g eth0)
+echo 'GRUB_CMDLINE_LINUX=" net.ifnames=0 biosdevname=0"' | sudo tee -a /etc/default/grub
+sudo update-grub
+echo allow-hotplug eth0 | sudo tee /etc/network/interfaces
+echo iface eth0 inet dhcp | sudo tee -a /etc/network/interfaces
+
 # Remove dependencies
 sudo apt -y --purge autoremove
+
+# Upgrade all packages
+sudo apt upgrade
 
 # Remove swapfile
 sudo swapoff -a
