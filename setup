@@ -12,27 +12,15 @@ sudo apt update
 # Remove all packages and install just whan we need
 
 # Purge all non-required packages
-# ubuntu-minimal is a meta package that depends on the packages 
-# in ubuntu-minimal install.
-# Need aptitude to autoremove everything we don't depend on.
-DEBIAN_FRONTEND=noninteractive \
-  apt-get --assume-yes install aptitude ubuntu-minimal
+sudo apt install aptitude
 
-# mark all packages as automatically installed except
-# ubuntu-minimal, kernel, systemd and openssh.
-# For some reason systemd isn't part of ubuntu-minimal.
-# Any dependencies of these four packages will be kept.
-# All others that aren't dependencies will be removed since
-# we have told apt they are automatically installed 
-# (ie we don't care about them unless we need them as a dep)
-DEBIAN_FRONTEND=noninteractive \
-  aptitude --assume-yes markauto \
-    '~i!?name(ubuntu-minimal~|linux-generic~|systemd~)'
-
-# purge all removed packages that were not purged.
-# removes leftover config/cruft.
-DEBIAN_FRONTEND=noninteractive \
-  aptitude --assume-yes purge '~c'
+# Mark everything as automatically installed
+sudo aptitude --assume-yes markauto "~i"
+sudo aptitude --assume-yes unmarkauto "?name(linux-generic)"
+sudo aptitude --assume-yes unmarkauto "?name(systemd)"
+sudo aptitude --assume-yes unmarkauto "?name(sudo)"
+sudo aptitude --assume-yes unmarkauto "?name(bash)"
+sudo aptitude --assume-yes unmarkauto "?name(grub)"
 
 # Add needed packages
 sudo apt install -y git ifupdown
