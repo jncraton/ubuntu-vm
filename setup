@@ -5,6 +5,12 @@ set -eu -o pipefail
 # Update package lists
 sudo apt update
 
+# Stage 1
+# Install packages needed to configure initramfs and configure it
+
+# Stage 2
+# Remove all packages and install just whan we need
+
 # Purge all non-required packages
 sudo apt purge -y --allow-remove-essential $(dpkg-query -Wf '${Package;-40}${Priority}\n' | awk '$2 ~ /important|standard|optional|extra/ && $1 !~ /linux|apt|lib|gpgv|ubuntu-keyring|init|systemd|adduser|kmod|sudo|grub|dmsetup|os-prober-gettext-base|dpkg|ucf/ { print $1 }')
 
