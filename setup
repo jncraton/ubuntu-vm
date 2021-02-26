@@ -12,7 +12,7 @@ sudo apt update
 # Remove all packages and install just whan we need
 
 # Purge all non-required packages
-sudo apt install aptitude
+sudo apt install -y aptitude
 
 # Mark everything as automatically installed
 sudo aptitude --assume-yes markauto "~i"
